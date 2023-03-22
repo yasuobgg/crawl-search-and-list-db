@@ -1,23 +1,33 @@
 # db lib
 from pymongo import MongoClient
+
 # local lib
 from bazaar import api as api_bazaar
 from otx import crawl_module as api_otx
 from virustotal import api as api_vt
+
 # app lib
 from sanic import Sanic
 from sanic_cors import CORS
 from sanic import json as sanic_json
 
+# env lib
+import os
+from dotenv import load_dotenv
+
 app = Sanic(__name__)
 CORS(app)
 
+load_dotenv()
+con_str = os.environ.get("CONNECTION_STRING")
+db_name = os.environ.get("DB_NAME")
+col_1 = os.environ.get("BAZAAR_COL")
+col_2 = os.environ.get("OTX_COL")
+col_3 = os.environ.get("VT_COL")
+
 # khai bao mongodb ,database, collection
-client = MongoClient("mongodb://admin:admin@localhost:27017/")
-db = client["crawl_data"]
-col_1 = "bazaar"
-col_2 = "otx"
-col_3 = "virustotal"
+client = MongoClient(con_str)
+db = client.get_database(db_name)
 
 
 @app.post("/bazaar_api/v1")  # run api of bazaar folder, post data to db

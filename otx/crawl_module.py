@@ -1,8 +1,11 @@
 from OTXv2 import OTXv2
-
 from otx import mongo_module as mongo
+import os
+from dotenv import load_dotenv
 
-otx_api_key = "77593c107d7c50c227a93b854b069be7eef35c1d035b279995cdc20ccde9b1cf"
+load_dotenv()
+
+otx_api_key = os.environ.get('OTX_API_KEY')
 otx = OTXv2(api_key=otx_api_key)
 
 

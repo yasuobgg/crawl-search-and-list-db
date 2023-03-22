@@ -1,12 +1,21 @@
 import requests
 from datetime import datetime
-
 from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
 
-client = MongoClient("mongodb://admin:admin@localhost:27017/")
-db = client["crawl_data"]
-col = db["virustotal"]
-col_db = db["bazaar"]
+load_dotenv()
+con_str = os.environ.get("CONNECTION_STRING")
+api_key = os.environ.get("BAZAAR_API_KEY")
+db_name = os.environ.get("DB_NAME")
+col_name = os.environ.get("VT_COL")
+col_get_data = os.environ.get("BAZAAR_COL")
+
+# Mongodb
+client = MongoClient(con_str)
+db = client.get_database(db_name)
+col = db.get_collection(col_name)
+col_db = db.get_collection(col_get_data)
 
 
 def insert_to_collection():
