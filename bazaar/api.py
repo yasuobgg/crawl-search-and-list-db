@@ -27,7 +27,7 @@ def getDataBazaar():
     ]
     for file_type in file_types:
         url = "https://mb-api.abuse.ch/api/v1/"
-        data_query = {"query": "get_file_type", "file_type": file_type, "limit": 10}
+        data_query = {"query": "get_file_type", "file_type": file_type, "limit": 25}
 
         data_headers = {"API-KEY": api_key}
 
