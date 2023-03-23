@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from bazaar import api as api_bazaar
 from otx import crawl_module as api_otx
 from virustotal import api as api_vt
+from virusshare import api as api_vs
 
 # app lib
 from sanic import Sanic
@@ -24,6 +25,7 @@ db_name = os.environ.get("DB_NAME")
 col_1 = os.environ.get("BAZAAR_COL")
 col_2 = os.environ.get("OTX_COL")
 col_3 = os.environ.get("VT_COL")
+col_4 = os.environ.get("VS_COL")
 
 # khai bao mongodb ,database, collection
 client = MongoClient(con_str)
@@ -42,9 +44,21 @@ def otx_api(request):
     return sanic_json("inserted successful!")
 
 
-@app.post("/vt_api/v1")  # run api of virustotal folder, post data to api
-def otx_api(request):
+@app.post("/vt_api/v1")  # run api of virustotal folder, post data to db
+def vt_api(request):
     api_vt.insert_to_collection()
+    return sanic_json("inserted successful!")
+
+
+@app.post("/vs_api/v2")  # run api of virusshare, find md5 ( from 001 to 463) and post to db
+def vs_api_md5(request):
+    ftype = request.json.get("id")
+    api_vs.find_md5_and_insert(ftype)
+
+
+@app.post("/vs_api/v1")  # run api of virusshare folder, post data to db
+def vs_api(request):
+    api_vs.vs_file_info()
     return sanic_json("inserted successful!")
 
 
@@ -73,8 +87,17 @@ def otx_data(request):
 
 
 @app.get("/vt_data")  # get all data from vt col and show
-def otx_data(request):
+def vt_data(request):
     col = db.get_collection(col_3)
+    data = col.find()
+    return sanic_json(
+        [{"timestamp": item["timestamp"], "data": item["data"]} for item in data]
+    )
+
+
+@app.get("/vs_data")  # get all data from vt col and show
+def vs_data(request):
+    col = db.get_collection(col_4)
     data = col.find()
     return sanic_json(
         [{"timestamp": item["timestamp"], "data": item["data"]} for item in data]
@@ -116,6 +139,16 @@ def vt_data_type(request):
     # print(ftype)
     col = db.get_collection(col_3)
     data = col.find({"data.attributes.type_description": ftype})
+    return sanic_json(
+        [{"timestamp": item["timestamp"], "data": item["data"]} for item in data]
+    )
+
+
+@app.post("/vs_data/type")  # get all data by type_description from vs col
+def vt_data_type(request):
+    ftype = request.json.get("type")
+    col = db.get_collection(col_4)
+    data = col.find({"data.extension": ftype})
     return sanic_json(
         [{"timestamp": item["timestamp"], "data": item["data"]} for item in data]
     )

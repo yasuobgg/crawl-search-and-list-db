@@ -40,6 +40,28 @@
 * [x] Thu thập tất cả data với mỗi file id lấy ra từ db được crawl về từ bazaar
 * [x] Data thu thập không bị duplicate
 
+4. crawl dữ liệu từ [virusshare](https://virusshare.com/apiv2_reference)
+- crawl các tên md5 của [trang](https://virusshare.com/hashes), sau đó lưu vào db
+- tìm thông tin các files bằng cách sử dụng file id đã mã hóa md5 của chúng, các file id này được lấy từ mongodb, được crawl về từ virusshare
+- lưu tất cả những thông tin của file lấy được về mongodb
+- định dạng
+```
+{
+    "timestamp": 012345678,
+    "data": [],
+}
+```
+- truy cập {POST} http://127.0.0.1:5505/vs_api/v2 để crawl tên md5 từ virusshare và gửi lên db, body gồm 1 json
+```
+{
+    "id":"xxx", #xxx = 000,001,...463
+}
+```
+- truy cập {POST} http://127.0.0.1:5505/vs_api/v1 để crawl data từ virusshare và gửi lên db, sau khi hoàn thành thông báo (inserted successful!)
+- tiêu chí
+* [x] Thu thập tất cả data với mỗi file id lấy ra từ db được crawl về từ bazaar
+* [x] Data thu thập không bị duplicate
+
 ## Search and list database
 1. Search all data from database
 - truy cập {GET} http://127.0.0.1:5505/bazaar_data , http://127.0.0.1:5505/otx_data, http://127.0.0.1:5505/vt_data
@@ -113,5 +135,36 @@
                 ....
             }
         }
+}
+```
+- với data từ virusshare, truy cập {POST} http://127.0.0.1:5505/vs_data/type
+- body:
+```
+{
+    "type":"exe"
+}
+```
+- response
+```
+{
+    "timestamp": 1679555702,
+    "data": {
+        "md5": "cc2b0d297470b90ca4b98c72aecaa1ea",
+        "ssdeep": "3072:p/61om6ZyKwQXHjUaBoDDJVQHSPM9TIhH+xV4EHNxlv1pFS:p/MoqvQX4aCDDJY0qHxlv1pF",
+        "asha256": "93c35b8cec24f2a0f72c76bdaf1d62f6db7a6b1a85b4b2b91d5c662d93e9dd05",
+        "sha224": "df617ea93920b9f52f8763b4299ba7462a7a86c36bd0c2c2c9cb1956",
+        "virustotal":object
+        "sha1":"f35e0207ba1ed70c6df7c0d411a0195d29d95dd4"
+        "filetype":"HTML document, UTF-8 Unicode text, with very long lines"
+        "sha512":"807bf896604700bf6cbaff2e843801d7ff2393835a875cf628502834df955118cef6cf…"
+        "trid":object
+        "sha384":"46e62266112a4ab4c3fa3246394397b8cc3aab1758fba6e83854f45d4b23b044fa446b…"
+        "extension":"s"
+        "mimetype:""text/html"
+        "sha256":"82b35889742bf14604a27a83613540d795a11894f18cc82652cb40c963aa458d"
+        "size":374190
+        "exif":Object
+        "response":1
+    }
 }
 ```
