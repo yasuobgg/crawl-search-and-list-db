@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 con_str = os.environ.get("CONNECTION_STRING")
-api_key = os.environ.get("BAZAAR_API_KEY")
+api_key = os.environ.get("VT_API_KEY")
 db_name = os.environ.get("DB_NAME")
 col_name = os.environ.get("VT_COL")
 col_get_data = os.environ.get("BAZAAR_COL")
@@ -27,8 +27,6 @@ def insert_to_collection():
 
     # print(type(my_sha256))
     a = datetime.now()
-
-    api_key = "8f7e14547a70fdfe8d47c7b390877d262788bd1335c08c15f0c4220ed7a48075"
 
     #  this script only query for filetypes that is hash sha256 in virustotal
     for file_type in my_sha256[0]:

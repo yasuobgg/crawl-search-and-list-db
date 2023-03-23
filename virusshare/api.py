@@ -47,25 +47,29 @@ def vs_file_info():
     tp = []
     for f in col_id_name.find():
         for i in range(len(f["MD5"])):
-            tp.append(f["MD5"][i])
-    while True:
-        for md5 in tp[:100]:
-            # print(md5)
-            f = col_name.find_one({"data.md5": md5})
+            f = col_name.find_one({"data.md5": f["MD5"][i]})
             if f is None:
-                url = f"https://virusshare.com/apiv2/file?apikey={api_key}&hash={md5}"
-                response = requests.get(url)
-                try:
-                    response_json = response.json()
-                except requests.exceptions.JSONDecodeError:
-                    response_json = ""
-
-                col_name.insert_one(
-                    {"timestamp": int(round(a.timestamp())), "data": response_json}
-                )
-                time.sleep(15)  # each minute can query 4 times :<
+                tp.append(f["MD5"][i])
             else:
                 pass
+
+    while True:  # moi lam goi ham chi insert 100 elements, voi thoi gian ~ 25 min
+        for md5 in tp[:100]:
+            # print(md5)
+            # f = col_name.find_one({"data.md5": md5})
+            # if f is None:
+            url = f"https://virusshare.com/apiv2/file?apikey={api_key}&hash={md5}"
+            response = requests.get(url)
+            try:
+                response_json = response.json()
+            except requests.exceptions.JSONDecodeError:
+                response_json = ""
+
+            col_name.insert_one(
+                {"timestamp": int(round(a.timestamp())), "data": response_json}
+            )
+            time.sleep(15)  # each minute can query 4 times :<
+            
         break
 
 
