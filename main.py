@@ -54,6 +54,7 @@ def vt_api(request):
 def vs_api_md5(request):
     ftype = request.json.get("id")
     api_vs.find_md5_and_insert(ftype)
+    return sanic_json("inserted successful!")
 
 
 @app.post("/vs_api/v1")  # run api of virusshare folder, post data to db
