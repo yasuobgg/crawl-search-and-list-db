@@ -69,6 +69,6 @@ def vs_file_info():
         break
 
 
-vs_file_info()
+# vs_file_info()
 # col_name.delete_many({"timestamp":1679546283})
 # print("done")
