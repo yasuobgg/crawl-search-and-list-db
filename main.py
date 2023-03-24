@@ -72,7 +72,10 @@ def db_data(col_name):
 def find_type_data(type, col_name):
     if col_name == "bazaar" or col_name == "otx":
         col = db.get_collection(col_name)
-        type = type.upper()
+        if col_name == "bazaar":
+            type = type.upper()
+        else:
+            type = type
         data = col.find({"type": type})
         return sanic_json(
             [
