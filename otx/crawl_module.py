@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-otx_api_key = os.environ.get('OTX_API_KEY')
+otx_api_key = os.environ.get("OTX_API_KEY")
 otx = OTXv2(api_key=otx_api_key)
 
 
@@ -24,12 +24,20 @@ def find_all_indicators_and_save_to_mongo():
     # Get all iocs of pulses found
     for type in types:  # browse each type in types[]
         results = otx.search_pulses(type, max_results=25)  # search for it pulses
-        for result in results["results"]:  # browse each result in results field of the above pulses
-            r = mongo.find_and_put_pulses_to_collection(result["id"])  # if pulse_id not exis in db, put to db and return pulse_id
-                                                                        # if it already exis in db, not put and return None
+        for result in results[
+            "results"
+        ]:  # browse each result in results field of the above pulses
+            r = mongo.find_and_put_pulses_to_collection(
+                result["id"]
+            )  # if pulse_id not exis in db, put to db and return pulse_id
+            # if it already exis in db, not put and return None
             if r is not None:
-                indicators = otx.get_pulse_indicators(result["id"])  # search for its indicators
-                for (indicator) in indicators:  # browse each indicator and save it to list iocs
+                indicators = otx.get_pulse_indicators(
+                    result["id"]
+                )  # search for its indicators
+                for (
+                    indicator
+                ) in indicators:  # browse each indicator and save it to list iocs
                     iocs.append(indicator)
 
     # browse each item in iocs above, set the item['type'] be the key
@@ -59,5 +67,6 @@ def find_all_indicators_and_save_to_mongo():
 def insert_to_collection():
     data = find_all_indicators_and_save_to_mongo()
     mongo.put_iocs_to_collection(data)
+
 
 # insert_to_collection()

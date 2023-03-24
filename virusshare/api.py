@@ -33,7 +33,7 @@ def find_md5_and_insert(id):
     temp = []
 
     for line in data[6:1006]:
-        f = col_id_name.find_one({"MD5":line})
+        f = col_id_name.find_one({"MD5": line})
         if f is None:
             temp.append(line)
         else:
@@ -69,7 +69,7 @@ def vs_file_info():
                 {"timestamp": int(round(a.timestamp())), "data": response_json}
             )
             time.sleep(15)  # each minute can query 4 times :<
-            
+
         break
 
 

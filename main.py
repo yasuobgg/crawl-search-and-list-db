@@ -32,18 +32,15 @@ db = client.get_database(db_name)
 def post_data(api_name):
     if api_name == "bazaar":
         api_bazaar.insert_to_collection()
-        return sanic_json("inserted successful!")
     elif api_name == "otx":
         api_otx.insert_to_collection()
-        return sanic_json("inserted successful!")
     elif api_name == "virustotal":
         api_vt.insert_to_collection()
-        return sanic_json("inserted successful!")
     elif api_name == "virusshare":
         api_vs.vs_file_info()
-        return sanic_json("inserted successful!")
     else:
         return sanic_json("wrong api name")
+    return sanic_json("inserted successful!")
 
 
 # func to get all data from db

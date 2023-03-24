@@ -4,11 +4,11 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-con_str = os.environ.get('CONNECTION_STRING')
-api_key = os.environ.get('BAZAAR_API_KEY')
-db_name = os.environ.get('DB_NAME')
-col_name = os.environ.get('OTX_COL')
-col_name_2 = os.environ.get('OTX_ID_COL')
+con_str = os.environ.get("CONNECTION_STRING")
+api_key = os.environ.get("BAZAAR_API_KEY")
+db_name = os.environ.get("DB_NAME")
+col_name = os.environ.get("OTX_COL")
+col_name_2 = os.environ.get("OTX_ID_COL")
 
 # MongoDB
 client = MongoClient(con_str)
