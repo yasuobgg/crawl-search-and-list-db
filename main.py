@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # db lib
 from pymongo import MongoClient
 
@@ -45,9 +48,9 @@ def post_data(api_name):
 
 # func to get all data from db
 def db_data(col_name):
+    col = db.get_collection(col_name)
+    data = col.find()
     if col_name == "bazaar" or col_name == "otx":
-        col = db.get_collection(col_name)
-        data = col.find()
         return sanic_json(
             [
                 {
@@ -59,8 +62,6 @@ def db_data(col_name):
             ]
         )
     elif col_name == "virustotal" or col_name == "virusshare":
-        col = db.get_collection(col_name)
-        data = col.find()
         return sanic_json(
             [{"timestamp": item["timestamp"], "data": item["data"]} for item in data]
         )
@@ -87,15 +88,12 @@ def find_type_data(type, col_name):
                 for item in data
             ]
         )
-    elif col_name == "virustotal":
+    elif col_name == "virustotal" or col_name == "virusshare":
         col = db.get_collection(col_name)
-        data = col.find({"data.attributes.type_description": type})
-        return sanic_json(
-            [{"timestamp": item["timestamp"], "data": item["data"]} for item in data]
-        )
-    elif col_name == "virusshare":
-        col = db.get_collection(col_name)
-        data = col.find({"data.extension": type})
+        if col_name == "virustotal":
+            data = col.find({"data.attributes.type_description": type})
+        else:
+            data = data = col.find({"data.extension": type})
         return sanic_json(
             [{"timestamp": item["timestamp"], "data": item["data"]} for item in data]
         )
