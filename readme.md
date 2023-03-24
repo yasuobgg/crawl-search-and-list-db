@@ -62,7 +62,13 @@
 - crawl các tên md5 của [trang](https://virusshare.com/hashes), sau đó lưu vào db
 - tìm thông tin các files bằng cách sử dụng file id đã mã hóa md5 của chúng, các file id này được lấy từ mongodb, được crawl về từ virusshare
 - lưu tất cả những thông tin của file lấy được về mongodb
-- truy cập {POST} http://127.0.0.1:5505/vs_api/v1 để crawl data từ virusshare và gửi lên db, sau khi hoàn thành thông báo (inserted successful!)
+- truy cập {POST} http://127.0.0.1:5505/api/v1 để crawl data từ virusshare và gửi lên db, sau khi hoàn thành thông báo (inserted successful!)
+- body:
+```
+{
+    "source":"virusshare"
+}
+```
 - định dạng
 ```
 {
