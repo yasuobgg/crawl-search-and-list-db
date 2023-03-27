@@ -47,14 +47,23 @@ def vs_file_info():
     tp = []
     for f in col_id_name.find():
         for i in range(len(f["MD5"])):
-            f = col_name.find_one({"data.md5": f["MD5"][i]})
+            # print(f["MD5"][i])
+            tp.append(f["MD5"][i])
+
+    tp2 = []
+    for doc in tp:
+        try:
+            f = col_name.find_one({"data.md5": doc})
             if f is None:
-                tp.append(f["MD5"][i])
+                # tp.append(f["MD5"][i])
+                tp2.append(doc)
             else:
                 pass
+        except KeyError:
+            pass
 
     while True:  # moi lan goi ham chi insert 100 elements, voi thoi gian ~ 25 min
-        for md5 in tp[:100]:
+        for md5 in tp2[:100]:
             # print(md5)
             # f = col_name.find_one({"data.md5": md5})
             # if f is None:

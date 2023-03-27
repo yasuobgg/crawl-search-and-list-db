@@ -11,7 +11,7 @@ from virustotal import api as api_vt
 from virusshare import api as api_vs
 
 # app lib
-from sanic import Sanic
+from sanic import Sanic, request
 from sanic_cors import CORS
 from sanic import json as sanic_json
 
@@ -91,9 +91,11 @@ def find_type_data(type, col_name):
     elif col_name == "virustotal" or col_name == "virusshare":
         col = db.get_collection(col_name)
         if col_name == "virustotal":
-            data = col.find({"data.attributes.type_description": type})
+            query = {f"data.attributes.{type}": {"$exists": True}}
+            data = col.find(query)
         else:
-            data = data = col.find({"data.extension": type})
+            query = {f"data.{type}": {"$exists": True}}
+            data = col.find(query)
         return sanic_json(
             [{"timestamp": item["timestamp"], "data": item["data"]} for item in data]
         )
@@ -101,34 +103,81 @@ def find_type_data(type, col_name):
         return sanic_json("wrong type or collection name")
 
 
-# create app route to post data
+def find_type_timestamp_data(type, timestamp, col_name):
+    if col_name == "bazaar" or col_name == "otx":
+        col = db.get_collection(col_name)
+        if col_name == "bazaar":
+            type = type.upper()
+        else:
+            type = type
+        data = col.find({"type": type, "timestamp": timestamp})
+        # data = col.find({"timestamp": { $gt: 20, $lt: 30}})
+
+        return sanic_json(
+            [
+                {
+                    "timestamp": item["timestamp"],
+                    "type": item["type"],
+                    "data": item["data"],
+                }
+                for item in data
+            ]
+        )
+    elif col_name == "virustotal" or col_name == "virusshare":
+        col = db.get_collection(col_name)
+        if col_name == "virustotal":
+            query = {
+                f"data.attributes.{type}": {"$exists": True},
+                "timestamp": timestamp,
+            }
+            data = col.find(query)
+        else:
+            query = {f"data.{type}": {"$exists": True}, "timestamp": timestamp}
+            data = col.find(query)
+        return sanic_json(
+            [{"timestamp": item["timestamp"], "data": item["data"]} for item in data]
+        )
+    else:
+        return sanic_json("wrong type or collection name")
+
+
+# create app route to crawl data and post to db
 @app.post("/api/v1")
 def api_v1(request):
-    api_name = request.json.get("source")
-    return post_data(api_name)
+    my_query = request.json
+
+    if len(my_query) == 1:
+        api_name = my_query["source"]
+        return post_data(api_name)
+
+    elif len(my_query) == 2:
+        api_name = my_query["source"]
+        number = my_query["number"]
+        api_vs.find_md5_and_insert(number)
+        return sanic_json("inserted successful!")
 
 
-# run api of virusshare, find md5 ( from 001 to 463) and post to db
-@app.post("/vs_api/v2")
-def vs_api_md5(request):
-    ftype = request.json.get("id")
-    api_vs.find_md5_and_insert(ftype)
-    return sanic_json("inserted successful!")
+# create app route to get data from db
+@app.post("/api/v2")
+def api_v2(request):
+    my_query = request.json
 
+    if len(my_query) == 1:  # get all data
+        col_name = my_query["source"]
+        return db_data(col_name)
 
-# create app route to get all data of a collection
-@app.post("/all_data")
-def all_data(request):
-    col_name = request.json.get("source")
-    return db_data(col_name)
+    elif len(my_query) == 2:  # get data by type
+        col_name = my_query["source"]
+        type_query = my_query["type"]
+        return find_type_data(type=type_query, col_name=col_name)
 
-
-# create app route to get all data by type of a collection
-@app.post("/query_by_type")
-def query_by_type(request):
-    type = request.json.get("type")
-    col_name = request.json.get("source")
-    return find_type_data(type, col_name)
+    elif len(my_query) == 3:
+        col_name = my_query["source"]
+        type_query = my_query["type"]
+        timestamp = my_query["timestamp"]
+        return find_type_timestamp_data(
+            type=type_query, timestamp=timestamp, col_name=col_name
+        )
 
 
 if __name__ == "__main__":
