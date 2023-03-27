@@ -31,7 +31,7 @@ def insert_to_collection():
 
     #  this script only query for filetypes that is hash sha256 in virustotal
     for file_type in my_sha256:
-        print(file_type)
+        # print(file_type)
         # file_type = '108086be0db84ea3c1be952a8b2dc9828b65efb21805f26f37c9c94825f8523ba'
         f = col.find_one({"data.id": file_type})
         if f is None:  # khong tim thay f

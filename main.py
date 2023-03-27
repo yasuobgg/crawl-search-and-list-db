@@ -19,6 +19,10 @@ from sanic import json as sanic_json
 import os
 from dotenv import load_dotenv
 
+# Scheduler
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+
 app = Sanic(__name__)
 CORS(app)
 
@@ -29,6 +33,13 @@ db_name = os.environ.get("DB_NAME")
 # khai bao mongodb ,database, collection
 client = MongoClient(con_str)
 db = client.get_database(db_name)
+
+
+def daily_crawl_and_post():
+    api_bazaar.insert_to_collection()
+    api_otx.insert_to_collection()
+    api_vt.insert_to_collection()
+    api_vs.vs_file_info()
 
 
 #  func to post data to mongodb
@@ -111,7 +122,7 @@ def find_type_timestamp_data(type, timestamp, col_name):
         else:
             type = type
         data = col.find({"type": type, "timestamp": timestamp})
-        # data = col.find({"timestamp": { $gt: 20, $lt: 30}})
+        # data = col.find({"timestamp": {"$gt": 20, "$lt": 30}})
 
         return sanic_json(
             [
@@ -178,6 +189,17 @@ def api_v2(request):
         return find_type_timestamp_data(
             type=type_query, timestamp=timestamp, col_name=col_name
         )
+
+
+# schedule everyday at 7 AM
+scheduler = BackgroundScheduler()
+trigger = CronTrigger(year="*", month="*", day="*", hour="7", minute="0", second="0")
+scheduler.add_job(
+    daily_crawl_and_post,
+    trigger=trigger,
+    name="daily pull",
+)
+scheduler.start()
 
 
 if __name__ == "__main__":
