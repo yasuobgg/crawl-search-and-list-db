@@ -3,6 +3,7 @@ from datetime import datetime
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 con_str = os.environ.get("CONNECTION_STRING")
@@ -26,7 +27,7 @@ def insert_to_collection():
         for data in doc["data"]:
             my_sha256.append(data)
 
-    print(my_sha256)
+    print(len(my_sha256))
     a = datetime.now()
 
     #  this script only query for filetypes that is hash sha256 in virustotal
@@ -52,6 +53,7 @@ def insert_to_collection():
                     "data": response_json,
                 }
             )
+            time.sleep(10)
         else:
             pass
 

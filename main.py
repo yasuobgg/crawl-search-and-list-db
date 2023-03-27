@@ -114,6 +114,7 @@ def find_type_data(type, col_name):
         return sanic_json("wrong type or collection name")
 
 
+# func to get data by type and timestamp from db
 def find_type_timestamp_data(type, timestamp, col_name):
     if col_name == "bazaar" or col_name == "otx":
         col = db.get_collection(col_name)
@@ -195,7 +196,7 @@ def api_v2(request):
 scheduler = BackgroundScheduler()
 trigger = CronTrigger(year="*", month="*", day="*", hour="7", minute="0", second="0")
 scheduler.add_job(
-    daily_crawl_and_post,
+    daily_crawl_and_post,  # takes ~40 min <<<
     trigger=trigger,
     name="daily pull",
 )
@@ -203,4 +204,5 @@ scheduler.start()
 
 
 if __name__ == "__main__":
+    # daily_crawl_and_post() # it takes ~ 40 min to run this function <<<
     app.run(host="0.0.0.0", port=5505, debug=True, auto_reload=True)
