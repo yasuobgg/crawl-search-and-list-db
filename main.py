@@ -11,7 +11,7 @@ from virustotal import api as api_vt
 from virusshare import api as api_vs
 
 # app lib
-from sanic import Sanic, request
+from sanic import Sanic
 from sanic_cors import CORS
 from sanic import json as sanic_json
 

@@ -1,0 +1,23 @@
+version: "3"
+services:
+  app:
+    build: .
+    command: python -u main.py
+    ports:
+      - "5505:5505"
+    volumes:
+      - .:/app
+    links:
+      - db
+  db:
+    image: mongo:latest
+    hostname: mymongodb
+    restart: unless-stopped
+    environment:
+      # - MONGO_INITDB_DATABASE=animal_db
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    volumes:
+      - ./data/db:/data/db
+    ports:
+      - 27021:27017

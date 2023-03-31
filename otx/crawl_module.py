@@ -3,9 +3,12 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 
+from OTXv2 import OTXv2
+
+
 load_dotenv()
 con_str = os.environ.get("CONNECTION_STRING")
-api_key = os.environ.get("BAZAAR_API_KEY")
+api_key = os.environ.get("OTX_API_KEY")
 db_name = os.environ.get("DB_NAME")
 col_name = os.environ.get("OTX_COL")
 col_name_2 = os.environ.get("OTX_ID_COL")
@@ -44,14 +47,6 @@ def find_and_put_pulses_to_collection(pulse):
     else:
         return None
 
-
-from OTXv2 import OTXv2
-
-# from otx import mongo_module as mongo
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 otx_api_key = os.environ.get("OTX_API_KEY")
 otx = OTXv2(api_key=otx_api_key)
