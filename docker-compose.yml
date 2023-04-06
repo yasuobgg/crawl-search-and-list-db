@@ -14,10 +14,17 @@ services:
     hostname: mymongodb
     restart: unless-stopped
     environment:
-      # - MONGO_INITDB_DATABASE=animal_db
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
     volumes:
-      - ./data/db:/data/db
+      # - ./data/db:/data/db
+      # - D:\Works\Python_Code\Data_mongo_docker:/data/db
+      - mongo_crawlandsearch:/data/db
     ports:
       - 27021:27017
+
+volumes:
+  mongo_crawlandsearch:
+    external: true
+
+    
