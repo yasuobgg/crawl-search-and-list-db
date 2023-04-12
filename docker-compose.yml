@@ -17,9 +17,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
     volumes:
-      # - ./data/db:/data/db
-      # - D:\Works\Python_Code\Data_mongo_docker:/data/db
-      - mongo_crawlandsearch:/data/db
+      - mongo_crawlandsearch:/data/db  # first, create a volume named: mongo_crawlandsearch and then save data to this
     ports:
       - 27021:27017
 

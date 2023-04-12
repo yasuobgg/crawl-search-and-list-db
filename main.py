@@ -6,7 +6,7 @@ from pymongo import MongoClient
 
 # local lib
 from bazaar import api as api_bazaar
-from otx import crawl_module as api_otx
+from otx import api as api_otx
 from virustotal import api as api_vt
 from virusshare import api as api_vs
 
