@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import time
 
+# get information from .env file
 load_dotenv()
 con_str = os.environ.get("CONNECTION_STRING")
 api_key = os.environ.get("VT_API_KEY")
@@ -18,44 +19,33 @@ db = client.get_database(db_name)
 col = db.get_collection(col_name)
 col_db = db.get_collection(col_get_data)
 
+a = datetime.now()
+
+
+def find_virustotal(sha256):
+    url = f"https://www.virustotal.com/api/v3/files/{sha256}"
+    data_headers = {"x-apikey": api_key}
+    response = requests.get(url, headers=data_headers)
+    response_json = response.json()
+    try:
+        response_json = response_json["data"]
+    except KeyError:
+        pass  # if not found file hashed SHA256 in virustotal,response will not have field `data`
+    col.insert_one(
+        {
+            "timestamp": int(round(a.timestamp())),
+            "data": response_json,
+        }
+    )
+    time.sleep(5)
+
 
 def insert_to_collection():
-    inf = col_db.find({"type": "SHA256"})
-
-    my_sha256 = []
-    for doc in inf:
+    cursor = col_db.find({"type": "SHA256"})
+    for doc in cursor:
         for data in doc["data"]:
-            my_sha256.append(data)
-
-    print(len(my_sha256))
-    a = datetime.now()
-
-    #  this script only query for filetypes that is hash sha256 in virustotal
-    for file_type in my_sha256:
-        # print(file_type)
-        # file_type = '108086be0db84ea3c1be952a8b2dc9828b65efb21805f26f37c9c94825f8523ba'
-        f = col.find_one({"data.id": file_type})
-        if f is None:  # khong tim thay f
-            url = f"https://www.virustotal.com/api/v3/files/{file_type}"
-            data_headers = {"x-apikey": api_key}
-            # print(url)
-            # print(type(url))
-            response = requests.get(url, headers=data_headers)
-            response_json = response.json()
-            try:
-                response_json = response_json["data"]
-            except KeyError:
-                response_json = response_json
-            col.insert_one(
-                {
-                    "timestamp": int(round(a.timestamp())),
-                    # "type": response_json['data']['attributes']['type_description'],
-                    "data": response_json,
-                }
-            )
-            time.sleep(10)
-        else:
-            pass
-
-
-# print("done!")
+            dt = col.find_one({"data.id": data})
+            if dt is None:
+                find_virustotal(dt)
+            else:
+                pass
