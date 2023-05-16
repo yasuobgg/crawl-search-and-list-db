@@ -29,14 +29,15 @@ def find_virustotal(sha256):
     response_json = response.json()
     try:
         response_json = response_json["data"]
-    except KeyError:
-        pass  # if not found file hashed SHA256 in virustotal,response will not have field `data`
-    col.insert_one(
+        col.insert_one(
         {
             "timestamp": int(round(a.timestamp())),
             "data": response_json,
         }
     )
+    except KeyError:
+        pass  # if not found file hashed SHA256 in virustotal,response will not have field `data`
+    
     time.sleep(5)
 
 
@@ -46,6 +47,6 @@ def insert_to_collection():
         for data in doc["data"]:
             dt = col.find_one({"data.id": data})
             if dt is None:
-                find_virustotal(dt)
+                find_virustotal(data)
             else:
                 pass
